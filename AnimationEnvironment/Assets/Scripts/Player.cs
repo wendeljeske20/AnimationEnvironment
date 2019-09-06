@@ -5,8 +5,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float mouseSensitivity = 5f;
+    public float moveSpeed;
+
+    public int jumpForce;
+
+    public float mouseSensitivity;
+    bool canJump = true;
     Vector3 screenPoint;
     Vector3 offset;
     GameObject draggedObject;
@@ -19,7 +23,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-      
+
     }
 
     void Update()
@@ -27,7 +31,8 @@ public class Player : MonoBehaviour
         Move();
         CameraMovement();
 
-
+        if (Input.GetKeyDown(KeyCode.Space) && OnGround())
+            Jump();
 
 
 
@@ -48,10 +53,7 @@ public class Player : MonoBehaviour
 
                 if (draggedObject)
                 {
-                    lastObjectColor = draggedObject.GetComponent<MeshRenderer>().material.color;
-                    draggedObject.GetComponent<MeshRenderer>().material.color = Color.red;
-                    screenPoint = Camera.main.WorldToScreenPoint(draggedObject.transform.position);
-                    offset = draggedObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
+                    PickObject();
 
                 }
             }
@@ -60,8 +62,7 @@ public class Player : MonoBehaviour
         {
             if (draggedObject)
             {
-                draggedObject.GetComponent<MeshRenderer>().material.color = lastObjectColor;
-                draggedObject = null;
+                DropObject();
             }
 
         }
@@ -69,17 +70,9 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButton(1) && draggedObject)
         {
-
-            Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
-            Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
-            if (draggedObject)
-            {
-                RunObjectSpinAnimation(draggedObject);
-                draggedObject.transform.position = curPosition;
-            }
+            HoldObject();
 
 
-            Debug.Log(draggedObject);
         }
 
     }
@@ -90,6 +83,41 @@ public class Player : MonoBehaviour
         go.transform.eulerAngles = new Vector3(0, go.transform.eulerAngles.y, 0);
 
 
+    }
+
+    void PickObject()
+    {
+        lastObjectColor = draggedObject.GetComponent<MeshRenderer>().material.color;
+        draggedObject.GetComponent<MeshRenderer>().material.color = Color.red;
+        screenPoint = Camera.main.WorldToScreenPoint(draggedObject.transform.position);
+        offset = draggedObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
+    }
+
+    void HoldObject()
+    {
+        Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
+        Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
+        if (draggedObject)
+        {
+            RunObjectSpinAnimation(draggedObject);
+            draggedObject.transform.position = curPosition;
+        }
+    }
+
+    void DropObject()
+    {
+        draggedObject.GetComponent<MeshRenderer>().material.color = lastObjectColor;
+        draggedObject = null;
+    }
+
+    bool OnGround()
+    {
+        return Physics.Raycast(transform.position, -Vector3.up, 1.1f);
+    }
+
+    void Jump()
+    {
+        GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce);
     }
 
 
