@@ -19,24 +19,29 @@ public class Player : MonoBehaviour
 
     Rigidbody rigidBody;
 
+    public Weapon weapon;
+
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-
+        Camera.main.transform.LookAt(Camera.main.transform.position + transform.forward);
     }
 
     void Update()
     {
+
+        //Camera.main.transform.eulerAngles = new Vector3(Mathf.Clamp(Camera.main.transform.eulerAngles.x, -45, 45),  Camera.main.transform.eulerAngles.y,  Camera.main.transform.eulerAngles.z);
         Move();
         CameraMovement();
 
         if (Input.GetKeyDown(KeyCode.Space) && OnGround())
             Jump();
 
-
-
-
+        if (Input.GetMouseButtonDown(0))
+        {
+            Shoot();
+        }
 
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -62,6 +67,7 @@ public class Player : MonoBehaviour
         {
             if (draggedObject)
             {
+                draggedObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 DropObject();
             }
 
@@ -110,6 +116,21 @@ public class Player : MonoBehaviour
         draggedObject = null;
     }
 
+    void Shoot()
+    {
+        //RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        // if (Physics.Raycast(ray, out hit, 10))
+        // {
+
+        // }
+        // if (!hit.collider)
+        //     weapon.Shoot((weapon.firePoint.position - hit.point).normalized);
+        // else
+        weapon.Shoot(ray.direction + new Vector3(0.1f, 0, 0));
+
+    }
+
     bool OnGround()
     {
         return Physics.Raycast(transform.position, -Vector3.up, 1.1f);
@@ -131,6 +152,16 @@ public class Player : MonoBehaviour
     void CameraMovement()
     {
         transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime);
+
+        Vector3 cameraEuler = Camera.main.transform.eulerAngles;
+
+        if (cameraEuler.x > 60 && cameraEuler.x < 200)
+            cameraEuler.x = 60;
+        else if (cameraEuler.x < 300 && cameraEuler.x > 200)
+            cameraEuler.x = 300;
+
+        Camera.main.transform.eulerAngles = cameraEuler;
         Camera.main.transform.Rotate(-Vector3.right * Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime);
+
     }
 }
