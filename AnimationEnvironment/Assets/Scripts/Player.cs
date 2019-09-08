@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     public float moveSpeed;
 
     public int jumpForce;
+    public int throwForce;
 
     public float mouseSensitivity;
     bool canJump = true;
@@ -23,11 +24,16 @@ public class Player : MonoBehaviour
 
     public ParticleSystem shock;
 
+    public bool onGround;
+    bool holdingObject;
+
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        Camera.main.transform.LookAt(Camera.main.transform.position + transform.forward);
+        Vector3 eulerAngles = Camera.main.transform.eulerAngles;
+        eulerAngles.x = 0;
+        Camera.main.transform.eulerAngles = eulerAngles;
     }
 
     void Update()
@@ -37,10 +43,10 @@ public class Player : MonoBehaviour
         Move();
         CameraMovement();
 
-        if (Input.GetKeyDown(KeyCode.Space) && OnGround())
+        if (Input.GetKeyDown(KeyCode.Space) && onGround)
             Jump();
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !holdingObject)
         {
             Shoot();
         }
@@ -76,9 +82,15 @@ public class Player : MonoBehaviour
         }
 
 
-        if (Input.GetMouseButton(1) && draggedObject)
+        if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0) && draggedObject)
+        {
+            ThrowObject();
+            DropObject();
+        }
+        else if (Input.GetMouseButton(1) && draggedObject)
         {
             HoldObject();
+
 
 
         }
@@ -112,6 +124,7 @@ public class Player : MonoBehaviour
         }
 
         shock.Play();
+        holdingObject = true;
     }
 
     void DropObject()
@@ -119,6 +132,14 @@ public class Player : MonoBehaviour
         draggedObject.GetComponent<MeshRenderer>().material.color = lastObjectColor;
         draggedObject = null;
         shock.Stop();
+        holdingObject = false;
+    }
+
+    void ThrowObject()
+    {
+        Rigidbody rb = draggedObject.GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
+        rb.AddForce(Camera.main.ScreenPointToRay(Input.mousePosition).direction * throwForce, ForceMode.Impulse);
     }
 
     void Shoot()
@@ -136,10 +157,10 @@ public class Player : MonoBehaviour
 
     }
 
-    bool OnGround()
-    {
-        return Physics.Raycast(transform.position, -Vector3.up, 1.1f);
-    }
+    // bool OnGround()
+    // {
+    //     return Physics.Raycast(transform.position, -Vector3.up, 1.1f);
+    // }
 
     void Jump()
     {
@@ -164,6 +185,8 @@ public class Player : MonoBehaviour
             cameraEuler.x = 60;
         else if (cameraEuler.x < 300 && cameraEuler.x > 200)
             cameraEuler.x = 300;
+        // else if (cameraEuler.x > 60 && cameraEuler.x < 300)
+        //     cameraEuler.x = 0;
 
         Camera.main.transform.eulerAngles = cameraEuler;
         Camera.main.transform.Rotate(-Vector3.right * Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime);

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
      public float shootForce;
-    public Bomb bombPrefab;
+    public Explosive explosivePrefab;
     public Transform firePoint;
 
    
@@ -23,7 +23,7 @@ public class Weapon : MonoBehaviour
 
     public void Shoot(Vector3 direction)
     {
-        Bomb bullet = Instantiate(bombPrefab, firePoint.position, Quaternion.identity);
-        bullet.GetComponent<Rigidbody>().AddForce(direction * shootForce);
+        Explosive explosive = Instantiate(explosivePrefab, firePoint.position, Quaternion.identity);
+        explosive.GetComponent<Rigidbody>().AddForce(direction * shootForce);
     }
 }

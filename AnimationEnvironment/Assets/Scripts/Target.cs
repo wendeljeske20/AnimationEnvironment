@@ -10,9 +10,11 @@ public class Target : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
-        if (other.collider.CompareTag("Bomb"))
+        if (other.collider.CompareTag("Bomb") || other.collider.CompareTag("Box"))
         {
-            GetComponent<Rigidbody>().AddTorque(Vector3.up * torque);
+            Rigidbody rb = GetComponent<Rigidbody>();
+            //rb.angularVelocity = Vector3.zero;
+            rb.AddTorque(Vector3.up * torque,ForceMode.Impulse);
             arc1.Play();
             arc2.Play();
             //Instantiate(arc1, transform.position, transform.rotation);

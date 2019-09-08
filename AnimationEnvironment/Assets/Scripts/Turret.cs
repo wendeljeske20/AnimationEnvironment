@@ -22,7 +22,7 @@ public class Turret : MonoBehaviour
         head.transform.LookAt(targetPosition);
 
         float distance = (transform.position - target.transform.position).sqrMagnitude;
-        Debug.Log(distance);
+        //Debug.Log(distance);
         if (distance < fireRange * fireRange)
         {
             if (nextFireInterval >= fireInterval)

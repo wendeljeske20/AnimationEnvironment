@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootForce: 200
-  bombPrefab: {fileID: 1053684841038750044, guid: 21c1957b6814e5d4ab0c813d70dbe9a7,
+  explosivePrefab: {fileID: 1053684841038750044, guid: 21c1957b6814e5d4ab0c813d70dbe9a7,
     type: 3}
   firePoint: {fileID: 8081916333268637025}
 --- !u!33 &8081916332563160079
@@ -463,5 +463,5 @@ MonoBehaviour:
   head: {fileID: 8081916332316838206}
   weapon: {fileID: 8081916332563160078}
   target: {fileID: 0}
-  fireRange: 10
+  fireRange: 15
   fireInterval: 1
