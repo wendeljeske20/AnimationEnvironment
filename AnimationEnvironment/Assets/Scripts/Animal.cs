@@ -107,4 +107,8 @@ public class Animal : MonoBehaviour
         rb.velocity = new Vector3(currentDirection.x * moveSpeed, rb.velocity.y, currentDirection.z * moveSpeed);
         // transform.Translate(transform.forward * moveSpeed * Time.deltaTime);
     }
+
+    private void OnTriggerEnter(Collider other) {
+        
+    }
 }

@@ -21,6 +21,8 @@ public class Player : MonoBehaviour
 
     public Weapon weapon;
 
+    public ParticleSystem shock;
+
 
     void Start()
     {
@@ -85,7 +87,7 @@ public class Player : MonoBehaviour
 
     void RunObjectSpinAnimation(GameObject go)
     {
-        go.transform.Rotate(Vector3.up * 200 * Time.deltaTime, Space.World);
+        go.transform.Rotate(Vector3.up * 150 * Time.deltaTime, Space.World);
         go.transform.eulerAngles = new Vector3(0, go.transform.eulerAngles.y, 0);
 
 
@@ -108,12 +110,15 @@ public class Player : MonoBehaviour
             RunObjectSpinAnimation(draggedObject);
             draggedObject.transform.position = curPosition;
         }
+
+        shock.Play();
     }
 
     void DropObject()
     {
         draggedObject.GetComponent<MeshRenderer>().material.color = lastObjectColor;
         draggedObject = null;
+        shock.Stop();
     }
 
     void Shoot()
@@ -127,7 +132,7 @@ public class Player : MonoBehaviour
         // if (!hit.collider)
         //     weapon.Shoot((weapon.firePoint.position - hit.point).normalized);
         // else
-        weapon.Shoot(ray.direction + new Vector3(0.1f, 0, 0));
+        weapon.Shoot(ray.direction);// + new Vector3(0.1f, 0, 0));
 
     }
 
